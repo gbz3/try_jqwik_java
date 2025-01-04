@@ -28,3 +28,21 @@ $ mvn archetype:generate \
 ```shell
 $ cd my-app && mvn test
 ```
+
+### jqwik 有効化
+
+- [User Guide](https://jqwik.net/docs/current/user-guide.html)
+- [Kotlin と jqwik で Property Based Testing](https://zenn.dev/msksgm/articles/20221007-kotlin-property-based-testing-with-jqwik)
+
+```shell
+## pom.xml に追加
+<dependencies>
+    ...
+    <dependency>
+        <groupId>net.jqwik</groupId>
+        <artifactId>jqwik</artifactId>
+        <version>1.9.2</version>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+```
