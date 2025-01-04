@@ -32,6 +32,7 @@ $ cd my-app && mvn test
 ### jqwik 有効化
 
 - [User Guide](https://jqwik.net/docs/current/user-guide.html)
+- [jqwik-starter-maven](https://github.com/jqwik-team/jqwik-samples/tree/main/jqwik-starter-maven)
 - [Kotlin と jqwik で Property Based Testing](https://zenn.dev/msksgm/articles/20221007-kotlin-property-based-testing-with-jqwik)
 
 ```shell
