@@ -23,7 +23,7 @@ public interface MipEncoder {
         final byte[] result = new byte[(aBytes.length / blockDataSize + 1) * getBlockSize()];
 
         // 最終ブロックを埋める
-        Arrays.fill(result, result.length - getBlockSize(), result.length - 1, getFillByte());
+        Arrays.fill(result, result.length - getBlockSize(), result.length, getFillByte());
 
         // 入力データを転記する
         for (int srcPos = 0, destPos = 0; srcPos < aBytes.length;) {
