@@ -38,7 +38,8 @@ public class MipSpliterator implements Spliterator<LinkedHashMap<String, byte[]>
         final int mipFillLen = 2;
         final int mipBlockLen = mipDataLen + mipFillLen;
         try {
-            if (inputPosition + sizeOfRecord > input.size()) {
+            System.out.println("### " + (inputPosition + sizeOfRecord + sizeOfRecord / mipDataLen * mipFillLen) + " : " + input.size());
+            if (inputPosition + sizeOfRecord + sizeOfRecord / mipDataLen * mipFillLen > input.size()) {
                 return false;
             }
 
@@ -50,6 +51,8 @@ public class MipSpliterator implements Spliterator<LinkedHashMap<String, byte[]>
                 while (fieldBuffer.position() < fieldBuffer.capacity()) {
                     // 1フィールド分の入力データが Filler で分割されている場合、分割して読み取る
                     final boolean isDivide = inputPosition % mipBlockLen + fieldBuffer.capacity() - fieldBuffer.position() > mipDataLen;
+                    System.out.println(">>> " + (isDivide ? mipDataLen - inputPosition % mipBlockLen : field.size()));
+                    System.out.println("+++ " + fieldBuffer.position() + " : " + fieldBuffer.capacity());
                     fieldBuffer.limit(isDivide ? mipDataLen - inputPosition % mipBlockLen : field.size());
                     inputPosition += input.read(fieldBuffer, inputPosition);
                     inputPosition += inputPosition % mipBlockLen == mipDataLen ? mipFillLen : 0;
