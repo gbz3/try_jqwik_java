@@ -14,6 +14,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Hashtable;
 
 public class PropertyBasedTest {
 
@@ -62,8 +63,9 @@ public class PropertyBasedTest {
     @Test
     void testTemporaryFile(@TempDir @NotNull Path tempDir) throws IOException {
         var tmpFile = tempDir.resolve("tmp.dat");
-        Files.writeString(tmpFile, "0123\t456\n789\n\t\t\n", charset);
+        Files.writeString(tmpFile, "0123\t456\n789\n\t\t\t\n", charset);
 
+        var cnt = new Hashtable<Byte, Integer>();
         try (var fis = new FileInputStream(tmpFile.toFile());
              var fch = fis.getChannel()
         ) {
@@ -76,6 +78,7 @@ public class PropertyBasedTest {
                 while (buff.hasRemaining()) {
                     var b = buff.get();
                     //System.out.printf("[%X] pos=%d\n", b, buff.position());
+                    cnt.compute(b, (k, v) -> (v == null)? 1: v + 1);
                     if (b == (byte) 0x15) {
                         // 1行分のデータを取得
                         var endPos = buff.position();
@@ -102,6 +105,7 @@ public class PropertyBasedTest {
             }
         }
 
+        cnt.forEach((k, v) -> System.out.printf("  cnt[0x%02X]: % 3d\n", k, v));
     }
 
 }
