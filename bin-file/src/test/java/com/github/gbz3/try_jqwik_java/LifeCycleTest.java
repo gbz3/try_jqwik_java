@@ -74,15 +74,16 @@ public class LifeCycleTest {
     }
 
     @Property
-    void test(@ForAll("ebcdicBytesList") @Size(min = 1, max = 10) @NotNull List<byte[]> bytesList) throws IOException {
+    void test(@ForAll("headerBytes") @Size(min = 1, max = 20) @NotNull List<byte[]> bytesList) throws IOException {
         var tempFile = tempDirectory.resolve("test.txt");
 
         // データ部分作成
-        var dataBytes = ByteBuffer.allocate(bytesList.stream().mapToInt(e -> Integer.BYTES + e.length).sum());
+        var dataBytes = ByteBuffer.allocate(bytesList.stream().mapToInt(e -> Integer.BYTES + e.length).sum() + Integer.BYTES);
         for (var bytes : bytesList) {
             dataBytes.putInt(bytes.length);
             dataBytes.put(bytes);
         }
+        dataBytes.putInt(0);
 
         // ブロック化
         var blockDataSize = 1012;
@@ -98,7 +99,6 @@ public class LifeCycleTest {
                 blockedBytes.put((byte) 0x40);
             }
         }
-        blockedBytes.putInt(0);
         while (blockedBytes.hasRemaining()) {
             blockedBytes.put((byte) 0x40);
         }
@@ -137,6 +137,28 @@ public class LifeCycleTest {
     @Provide
     Arbitrary<List<byte[]>> ebcdicBytesList() {
         return ebcdicBytes().list();
+    }
+
+    @Provide
+    Arbitrary<List<byte[]>> headerBytes() {
+        return Combinators.combine(bbbBytes(), be24Bytes(), be99Bytes()).as(List::of);
+    }
+
+    @Provide
+    Arbitrary<byte @NotNull []> bbbBytes() {
+        return Arbitraries.of("1240").map(String::getBytes);
+    }
+
+    @Provide
+    Arbitrary<byte @NotNull []> be24Bytes() {
+        return Arbitraries.of("200", "0000").map(String::getBytes);
+    }
+
+    @Provide
+    Arbitrary<byte @NotNull []> be99Bytes() {
+        return Arbitraries.bytes()
+                .filter(LifeCycleTest::isEbcdicNumber)
+                .array(byte[].class).ofMinSize(6).ofMaxSize(19);
     }
 
 }
